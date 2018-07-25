@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +63,8 @@ public class GalleryActivity extends AppCompatActivity {
             final Uri imageUri = data.getData();
             final InputStream imageStream = getContentResolver().openInputStream(imageUri);
             final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-            image.setImageBitmap(selectedImage);
+
+            image.setImageBitmap(resizeBitmap(selectedImage));
             img.setBitmap(selectedImage);
             viewModel.updateImage(img);
             updateDisplay();
@@ -74,6 +76,17 @@ public class GalleryActivity extends AppCompatActivity {
     }else {
         Toast.makeText(GalleryActivity.this, R.string.no_image_picked_msg,Toast.LENGTH_LONG).show();
     }
+    }
+
+    private Bitmap resizeBitmap(Bitmap selectedImage) {
+        float aspectRatio = selectedImage.getWidth() /
+                (float) selectedImage.getHeight();
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels;
+        int height = Math.round(width/aspectRatio);
+        return Bitmap.createScaledBitmap(selectedImage,width,height,false);
     }
 
     private void initializeUi() {

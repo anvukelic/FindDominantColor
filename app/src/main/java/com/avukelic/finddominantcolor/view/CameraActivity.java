@@ -1,9 +1,15 @@
 package com.avukelic.finddominantcolor.view;
 
+import android.Manifest;
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.avukelic.finddominantcolor.R;
 import com.avukelic.finddominantcolor.model.Image;
@@ -24,6 +30,7 @@ import io.fotoapparat.view.CameraView;
 
 public class CameraActivity extends AppCompatActivity {
 
+    public static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
 
     @BindView(R.id.color_name_camera)
     TextView colorName;
@@ -60,7 +67,7 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        fotoapparat.start();
+        checkForCameraPermission();
     }
 
     @Override
@@ -84,7 +91,7 @@ public class CameraActivity extends AppCompatActivity {
 
     //Update TextView fields
     private void updateDisplay() {
-        viewModel.getImage().observe(this, image->{
+        viewModel.getImage().observe(this, image -> {
             colorName.setText(image.getColor());
             colorHexa.setText(image.getHexadecimal());
             colorRGB.setText(image.getRGB());
@@ -100,7 +107,7 @@ public class CameraActivity extends AppCompatActivity {
                 .photoResolution(ResolutionSelectorsKt.highestResolution())
                 .lensPosition(LensPositionSelectorsKt.back())
                 .focusMode(SelectorsKt.firstAvailable(
-                        FocusModeSelectorsKt. continuousFocusPicture(),
+                        FocusModeSelectorsKt.continuousFocusPicture(),
                         FocusModeSelectorsKt.autoFocus(),
                         FocusModeSelectorsKt.fixed()
                 ))
@@ -110,5 +117,34 @@ public class CameraActivity extends AppCompatActivity {
                         FlashSelectorsKt.torch()
                 ))
                 .build();
+    }
+
+    private void checkForCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    MY_PERMISSIONS_REQUEST_CAMERA);
+
+        } else {
+            fotoapparat.start();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_CAMERA: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    fotoapparat.start();
+                } else {
+                    Toast.makeText(this, getString(R.string.permission_denied_msg), Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+
+        }
     }
 }

@@ -17,5 +17,6 @@
     <string name="gray">Gray</string>
     <string name="pick_image_error_msg">Something went wrong</string>
     <string name="no_image_picked_msg">You haven\'t picked Image</string>
+    <string name="permission_denied_msg">To use this option you need to grant camera permission</string>
 
 </resources>
