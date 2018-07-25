@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Find Dominant Color</string>
+    <string name="main_get_from_camera">Pronađi dominantnu boju</string>
+    <string name="main_get_from_gallery">Izaberi iz galerije</string>
+    <string name="take_picture">Uhvati fotografiju</string>
+    <string name="search_for_picture">Potraži u galeriji</string>
+    <string name="black">Crna</string>
+    <string name="white">Bijela</string>
+    <string name="red">Crvena</string>
+    <string name="blue">Plava</string>
+    <string name="yellow">Žuta</string>
+    <string name="purple">Ljubičasta</string>
+    <string name="green">Zelena</string>
+    <string name="orange">Narančasta</string>
+    <string name="gray">Siva</string>
+    <string name="pick_image_error_msg">Dogodila se greška</string>
+    <string name="no_image_picked_msg">Niste odabrali fotografiju</string>
+</resources>
