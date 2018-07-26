@@ -15,7 +15,7 @@ public class ColorName {
     }
 
     public int computeMSE(int pixR, int pixG, int pixB) {
-        return (int) (((pixR - r) * (pixR - r) + (pixG - g) * (pixG - g) + (pixB - b)
+        return  (((pixR - r) * (pixR - r) + (pixG - g) * (pixG - g) + (pixB - b)
                 * (pixB - b)) / 3);
     }
 

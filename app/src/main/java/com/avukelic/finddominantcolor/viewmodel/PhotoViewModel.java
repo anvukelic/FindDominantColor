@@ -17,13 +17,18 @@ public class PhotoViewModel extends ViewModel {
         if (this.image == null) {
             this.image = new MutableLiveData<>();
             this.image.setValue(image);
+            this.image.getValue().getDominantColor();
         }
         return this.image;
     }
 
-    public void updateImage(Image image){
+    public void updateImage(Image image) {
         this.image.setValue(image);
         this.image.getValue().getDominantColor();
+    }
+
+    public boolean isImageTaken(){
+        return image != null;
     }
 
     public MutableLiveData<Image> getImage() {

@@ -63,7 +63,6 @@ public class Image {
         Palette p = Palette.from(getBitmap()).generate();
         setHexadecimal(getHexadecimal(p.getDominantSwatch().getRgb()));
         setRGB(getRgbCode(p.getDominantSwatch().getRgb()));
-
         if (isGray(r, g, b)) {
             setColor(App.getContext().getString(R.string.gray));
         } else {

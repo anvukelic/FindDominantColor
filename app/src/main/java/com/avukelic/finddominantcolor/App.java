@@ -7,7 +7,7 @@ import android.content.res.Resources;
 /**
  * Created by avukelic on 25-Jul-18.
  */
-public class App extends Application{
+public class App extends Application {
 
     private static Context context;
 
@@ -17,7 +17,7 @@ public class App extends Application{
         context = this;
     }
 
-    public static Context getContext(){
+    public static Context getContext() {
         return context;
     }
 }

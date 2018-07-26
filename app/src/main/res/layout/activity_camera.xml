@@ -7,7 +7,7 @@
     tools:context=".view.CameraActivity">
 
     <io.fotoapparat.view.CameraView
-        android:id="@+id/camera_image_camera"
+        android:id="@+id/camera_image"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/color_labels_camera"
@@ -21,7 +21,7 @@
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@id/btn_take_picture"
-        app:layout_constraintTop_toBottomOf="@id/camera_image_camera">
+        app:layout_constraintTop_toBottomOf="@id/camera_image">
 
         <TextView
             android:id="@+id/color_name_camera"

@@ -1,7 +1,6 @@
 package com.avukelic.finddominantcolor.view;
 
 import android.Manifest;
-import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -12,7 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.avukelic.finddominantcolor.R;
-import com.avukelic.finddominantcolor.model.Image;
+import com.avukelic.finddominantcolor.utils.ImageUtil;
 import com.avukelic.finddominantcolor.viewmodel.PhotoViewModel;
 
 import butterknife.BindView;
@@ -38,30 +37,28 @@ public class CameraActivity extends AppCompatActivity {
     TextView colorHexa;
     @BindView(R.id.color_rgb_camera)
     TextView colorRGB;
-    @BindView(R.id.camera_image_camera)
+    @BindView(R.id.camera_image)
     CameraView camera;
     Fotoapparat fotoapparat;
 
     PhotoViewModel viewModel;
 
-    Image img;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(R.string.take_picture);
-        ButterKnife.bind(this);
         initializeUi();
     }
 
     private void initializeUi() {
-        img = new Image();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(R.string.take_picture);
+        ButterKnife.bind(this);
         configureCamera();
         viewModel = ViewModelProviders.of(this).get(PhotoViewModel.class);
-        viewModel.setImage(img);
-        updateDisplay();
+        if (viewModel.isImageTaken()) {
+            updateDisplay();
+        }
     }
 
     @Override
@@ -81,8 +78,11 @@ public class CameraActivity extends AppCompatActivity {
     public void takePicture() {
         PhotoResult photoResult = fotoapparat.takePicture();
         photoResult.toBitmap().whenAvailable(bitmapPhoto -> {
-            img.setBitmap(bitmapPhoto.bitmap);
-            viewModel.updateImage(img);
+            if (!viewModel.isImageTaken()) {
+                viewModel.setImage(ImageUtil.mapBitmapToImage(bitmapPhoto.bitmap));
+            } else {
+                viewModel.updateImage(ImageUtil.mapBitmapToImage(bitmapPhoto.bitmap));
+            }
             updateDisplay();
             return null;
         });
@@ -125,7 +125,6 @@ public class CameraActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.CAMERA},
                     MY_PERMISSIONS_REQUEST_CAMERA);
-
         } else {
             fotoapparat.start();
         }

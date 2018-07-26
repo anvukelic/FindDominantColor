@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import com.avukelic.finddominantcolor.R;
 import com.avukelic.finddominantcolor.model.Image;
+import com.avukelic.finddominantcolor.utils.ImageUtil;
+import com.avukelic.finddominantcolor.utils.ToastUtil;
 import com.avukelic.finddominantcolor.viewmodel.PhotoViewModel;
 
 import java.io.FileNotFoundException;
@@ -33,71 +35,72 @@ public class GalleryActivity extends AppCompatActivity {
     TextView colorHexa;
     @BindView(R.id.color_rgb_gallery)
     TextView colorRGB;
-    @BindView(R.id.image_from_gallery)
+    @BindView(R.id.gallery_image)
     ImageView image;
 
     PhotoViewModel viewModel;
 
-    Image img;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(R.string.search_for_picture);
-        ButterKnife.bind(this);
+
         initializeUi();
     }
 
     @OnClick(R.id.btn_search_for_picture)
-    public void launchGallery(){
+    public void launchGallery() {
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {if (resultCode == RESULT_OK) {
-        try {
-            final Uri imageUri = data.getData();
-            final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-            final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            try {
+                final Uri imageUri = data.getData();
+                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                image.setImageBitmap(resizeBitmap(selectedImage));
+                if (!viewModel.isImageTaken()) {
+                    viewModel.setImage(ImageUtil.mapBitmapToImage(selectedImage));
+                } else {
+                    viewModel.updateImage(ImageUtil.mapBitmapToImage(selectedImage));
+                }
+                updateDisplay();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                ToastUtil.callShortToast(GalleryActivity.this, R.string.pick_image_error_msg);
+            }
 
-            image.setImageBitmap(resizeBitmap(selectedImage));
-            img.setBitmap(selectedImage);
-            viewModel.updateImage(img);
-            updateDisplay();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Toast.makeText(GalleryActivity.this, R.string.pick_image_error_msg, Toast.LENGTH_LONG).show();
+        } else {
+            ToastUtil.callShortToast(GalleryActivity.this, R.string.no_image_picked_msg);
         }
-
-    }else {
-        Toast.makeText(GalleryActivity.this, R.string.no_image_picked_msg,Toast.LENGTH_LONG).show();
-    }
     }
 
     private Bitmap resizeBitmap(Bitmap selectedImage) {
         float aspectRatio = selectedImage.getWidth() /
                 (float) selectedImage.getHeight();
-
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
-        int height = Math.round(width/aspectRatio);
-        return Bitmap.createScaledBitmap(selectedImage,width,height,false);
+        int height = Math.round(width / aspectRatio);
+        return Bitmap.createScaledBitmap(selectedImage, width, height, false);
     }
 
     private void initializeUi() {
-        img = new Image();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(R.string.search_for_picture);
+        ButterKnife.bind(this);
         viewModel = ViewModelProviders.of(this).get(PhotoViewModel.class);
-        viewModel.setImage(img);
-        updateDisplay();
+        if (viewModel.isImageTaken()) {
+            updateDisplay();
+        }
     }
 
     private void updateDisplay() {
-        viewModel.getImage().observe(this, image->{
+        viewModel.getImage().observe(this, image -> {
             colorName.setText(image.getColor());
             colorHexa.setText(image.getHexadecimal());
             colorRGB.setText(image.getRGB());

@@ -19,17 +19,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.container_camera)
-    public void goToCamera(){
+    public void goToCamera() {
         launchActivity(CameraActivity.class);
     }
 
     @OnClick(R.id.container_gallery)
-    public void goToGallery(){
+    public void goToGallery() {
         launchActivity(GalleryActivity.class);
     }
 
-    private void launchActivity(Class c){
-        Intent intent = new Intent(this,c);
+    private void launchActivity(Class c) {
+        Intent intent = new Intent(this, c);
         startActivity(intent);
     }
 }
